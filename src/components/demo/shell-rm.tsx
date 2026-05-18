@@ -16,6 +16,8 @@ const NAV_ITEMS: { href: string; key: DemoMsgKey }[] = [
   { href: "/rm/markets", key: "nav_markets" },
   { href: "/admin/markets", key: "nav_admin" },
   { href: "/rm/compliance", key: "nav_compliance" },
+  { href: "/rm/robo", key: "nav_robo" },
+  { href: "/rm/integrations", key: "nav_integrations" },
   { href: "/client", key: "nav_clientWeb" },
   { href: "/client-mobile", key: "nav_clientMobile" },
 ];
@@ -94,7 +96,7 @@ export function ShellRM({ children }: { children: React.ReactNode }) {
           className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2"
           aria-label={t("shell_navAria")}
         >
-          {NAV_ITEMS.slice(0, 8).map((item) => (
+          {NAV_ITEMS.slice(0, 10).map((item) => (
             <Link
               key={item.href}
               href={item.href}

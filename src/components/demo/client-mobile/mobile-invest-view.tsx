@@ -1,23 +1,72 @@
 "use client";
 
 import { useDemoLocale } from "@/components/demo/demo-locale-provider";
+import { FUND_HOUSES } from "@/lib/ecobank-capabilities-data";
 import { MOBILE_ALLOCATION, MOBILE_PORTFOLIO } from "@/lib/client-mobile-data";
 import { HOLDINGS_MOCK } from "@/lib/demo-data";
 import type { DemoMsgKey } from "@/lib/demo-i18n";
 import { formatGhs } from "@/lib/format";
+import { MobileQuickActions } from "./mobile-quick-actions";
+
+export type InvestTop = "overview" | "partners";
 
 export function MobileInvestView({
+  top,
   onOpenRebalance,
   onOpenSweep,
+  onOpenFunds,
+  onOpenRobo,
+  onOpenCrossSell,
+  onOpenInsights,
 }: {
+  top: InvestTop;
   onOpenRebalance: () => void;
   onOpenSweep: () => void;
+  onOpenFunds: () => void;
+  onOpenRobo: () => void;
+  onOpenCrossSell: () => void;
+  onOpenInsights: () => void;
 }) {
   const { t } = useDemoLocale();
   const total = MOBILE_PORTFOLIO.totalValue;
 
+  if (top === "partners") {
+    return (
+      <div className="space-y-4">
+        <p className="text-xs text-eco-muted">{t("fund_sub")}</p>
+        <ul className="space-y-2">
+          {FUND_HOUSES.map((fh) => (
+            <li key={fh.id} className="rounded-xl border border-eco-border bg-white p-3 text-xs">
+              <p className="font-semibold text-eco-navy">{fh.name}</p>
+              <p className="mt-1 text-eco-muted">
+                {fh.region} · {fh.fundsListed} {t("fund_listed")}
+              </p>
+              <p className="mt-1 text-[11px] text-eco-muted">
+                {t("fund_cutoff")}: {fh.cutOff}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <button
+          type="button"
+          onClick={onOpenFunds}
+          className="flex min-h-11 w-full items-center justify-center rounded-xl bg-eco-navy py-3 text-sm font-semibold text-white"
+        >
+          {t("fund_factsheet")} & {t("fund_place_order")}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
+      <MobileQuickActions
+        onOpenFunds={onOpenFunds}
+        onOpenRobo={onOpenRobo}
+        onOpenCrossSell={onOpenCrossSell}
+        onOpenInsights={onOpenInsights}
+      />
+
       <div className="rounded-2xl border border-eco-border bg-white p-4 shadow-sm">
         <p className="text-[10px] font-semibold uppercase text-eco-muted">{t("mob_invest_total")}</p>
         <p className="mt-1 text-2xl font-semibold text-eco-navy">{formatGhs(total)}</p>
@@ -59,18 +108,13 @@ export function MobileInvestView({
           {HOLDINGS_MOCK.map((h) => {
             const pct = Math.round((h.value / total) * 100);
             return (
-              <li
-                key={h.name}
-                className="rounded-xl border border-eco-border bg-white p-3"
-              >
+              <li key={h.name} className="rounded-xl border border-eco-border bg-white p-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-sm font-medium leading-snug text-eco-ink">{h.name}</p>
                     <p className="text-[10px] text-eco-muted">{h.source} · {pct}%</p>
                   </div>
-                  <span className="shrink-0 text-sm font-semibold text-eco-navy">
-                    {formatGhs(h.value)}
-                  </span>
+                  <span className="shrink-0 text-sm font-semibold text-eco-navy">{formatGhs(h.value)}</span>
                 </div>
               </li>
             );

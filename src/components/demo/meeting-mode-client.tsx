@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { CrossSellPanel } from "@/components/demo/cross-sell-panel";
 import { useEffect, useMemo, startTransition, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ComplianceRail } from "@/components/demo/compliance-rail";
@@ -322,6 +323,7 @@ export function MeetingModeClient({ presentMode = false }: { presentMode?: boole
                   </article>
                 ))}
               </div>
+              <CrossSellPanel meetingMode />
             </section>
           )}
 

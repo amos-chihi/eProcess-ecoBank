@@ -6,30 +6,37 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useDemoLocale } from "@/components/demo/demo-locale-provider";
 import type { DemoMsgKey } from "@/lib/demo-i18n";
 import { MobileGoalsView } from "./client-mobile/mobile-goals-view";
-import { MobileInvestView } from "./client-mobile/mobile-invest-view";
+import { MobileInvestView, type InvestTop } from "./client-mobile/mobile-invest-view";
 import { MobileMessagesView } from "./client-mobile/mobile-messages-view";
 import { MobileProfileView } from "./client-mobile/mobile-profile-view";
 import { GoalDetailSheet } from "./client-mobile/goal-detail-sheet";
 import {
+  MobileCrossSellSheet,
+  MobileFundHousesSheet,
+  MobileInsightsSheet,
   MobileRebalanceSheet,
   MobileReplySheet,
+  MobileRoboSheet,
   MobileSweepSheet,
   MobileWhatIfSheet,
 } from "./client-mobile/mobile-action-sheets";
 import type { DemoGoal } from "@/lib/demo-data";
+
+type SheetKind = "robo" | "funds" | "crosssell" | "insights";
 
 type MobileOverlay =
   | { kind: "goal"; goal: DemoGoal }
   | { kind: "rebalance" }
   | { kind: "sweep" }
   | { kind: "whatif"; goal: DemoGoal }
-  | { kind: "reply"; subject: string };
+  | { kind: "reply"; subject: string }
+  | { kind: SheetKind };
 
 export type BottomNav = "goals" | "invest" | "messages" | "profile";
 
 export const CLIENT_MOBILE_TABS = ["goals", "invest", "messages", "profile"] as const satisfies readonly BottomNav[];
 
-type TopSeg = "overview" | "notifications";
+type GoalsTop = "overview" | "notifications";
 
 function bottomNavLabel(tab: BottomNav): DemoMsgKey {
   switch (tab) {
@@ -68,7 +75,8 @@ export function ClientMobileDemo({
   const searchParams = useSearchParams();
   const { t } = useDemoLocale();
 
-  const [top, setTop] = useState<TopSeg>("overview");
+  const [goalsTop, setGoalsTop] = useState<GoalsTop>("overview");
+  const [investTop, setInvestTop] = useState<InvestTop>("overview");
   const [bottom, setBottom] = useState<BottomNav>(() => initialBottom(initialTab));
   const [handoffDismissed, setHandoffDismissed] = useState(false);
   const [overlay, setOverlay] = useState<MobileOverlay | null>(null);
@@ -89,7 +97,7 @@ export function ClientMobileDemo({
     (id: BottomNav) => {
       setBottom(id);
       setOverlay(null);
-      if (id !== "goals") setTop("overview");
+      if (id !== "goals") setGoalsTop("overview");
       const params = new URLSearchParams(searchParams.toString());
       params.set("tab", id);
       if (initialHandoff && !handoffDismissed) params.set("handoff", "1");
@@ -99,7 +107,19 @@ export function ClientMobileDemo({
     [router, searchParams, initialHandoff, handoffDismissed],
   );
 
+  const openSheet = useCallback((kind: SheetKind) => {
+    setOverlay({ kind });
+  }, []);
+
+  const sheetHandlers = {
+    onOpenFunds: () => openSheet("funds"),
+    onOpenRobo: () => openSheet("robo"),
+    onOpenCrossSell: () => openSheet("crosssell"),
+    onOpenInsights: () => openSheet("insights"),
+  };
+
   const showGoalsTop = bottom === "goals";
+  const showInvestTop = bottom === "invest";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-eco-navy/[0.12] via-eco-surface to-eco-teal-muted/60 px-3 py-6 sm:px-4 sm:py-10">
@@ -140,9 +160,9 @@ export function ClientMobileDemo({
             <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-eco-border px-4 pb-2 text-xs [-webkit-overflow-scrolling:touch]">
               <button
                 type="button"
-                onClick={() => setTop("overview")}
+                onClick={() => setGoalsTop("overview")}
                 className={`shrink-0 rounded-full px-3 py-2 font-medium ${
-                  top === "overview"
+                  goalsTop === "overview"
                     ? "bg-eco-navy text-white"
                     : "bg-eco-surface text-eco-muted hover:text-eco-ink"
                 }`}
@@ -151,14 +171,48 @@ export function ClientMobileDemo({
               </button>
               <button
                 type="button"
-                onClick={() => setTop("notifications")}
+                onClick={() => setGoalsTop("notifications")}
                 className={`shrink-0 rounded-full px-3 py-2 font-medium ${
-                  top === "notifications"
+                  goalsTop === "notifications"
                     ? "bg-eco-navy text-white"
                     : "bg-eco-surface text-eco-muted hover:text-eco-ink"
                 }`}
               >
                 {t("cm_top_notifications")}
+              </button>
+              <button
+                type="button"
+                onClick={() => openSheet("insights")}
+                className="shrink-0 rounded-full bg-eco-surface px-3 py-2 font-medium text-eco-muted hover:text-eco-ink"
+              >
+                {t("cm_top_insights")}
+              </button>
+            </div>
+          )}
+
+          {showInvestTop && (
+            <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-eco-border px-4 pb-2 text-xs [-webkit-overflow-scrolling:touch]">
+              <button
+                type="button"
+                onClick={() => setInvestTop("overview")}
+                className={`shrink-0 rounded-full px-3 py-2 font-medium ${
+                  investTop === "overview"
+                    ? "bg-eco-navy text-white"
+                    : "bg-eco-surface text-eco-muted hover:text-eco-ink"
+                }`}
+              >
+                {t("mob_invest_tab_overview")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setInvestTop("partners")}
+                className={`shrink-0 rounded-full px-3 py-2 font-medium ${
+                  investTop === "partners"
+                    ? "bg-eco-navy text-white"
+                    : "bg-eco-surface text-eco-muted hover:text-eco-ink"
+                }`}
+              >
+                {t("mob_invest_tab_partners")}
               </button>
             </div>
           )}
@@ -168,23 +222,28 @@ export function ClientMobileDemo({
           >
             {bottom === "goals" && (
               <MobileGoalsView
-                top={top}
+                top={goalsTop}
                 showHandoffBanner={showHandoffBanner}
                 onDismissHandoff={() => setHandoffDismissed(true)}
                 onNavigateTab={(tab) => selectBottom(tab)}
                 onSelectGoal={(goal) => setOverlay({ kind: "goal", goal })}
+                onOpenInsights={sheetHandlers.onOpenInsights}
+                onOpenCrossSell={sheetHandlers.onOpenCrossSell}
+                onOpenSheet={openSheet}
               />
             )}
             {bottom === "invest" && (
               <MobileInvestView
+                top={investTop}
                 onOpenRebalance={() => setOverlay({ kind: "rebalance" })}
                 onOpenSweep={() => setOverlay({ kind: "sweep" })}
+                {...sheetHandlers}
               />
             )}
             {bottom === "messages" && (
               <MobileMessagesView onOpenReply={(subject) => setOverlay({ kind: "reply", subject })} />
             )}
-            {bottom === "profile" && <MobileProfileView />}
+            {bottom === "profile" && <MobileProfileView {...sheetHandlers} />}
           </div>
 
           {overlay?.kind === "goal" && (
@@ -204,6 +263,10 @@ export function ClientMobileDemo({
           {overlay?.kind === "reply" && (
             <MobileReplySheet subject={overlay.subject} onClose={() => setOverlay(null)} />
           )}
+          {overlay?.kind === "robo" && <MobileRoboSheet onClose={() => setOverlay(null)} />}
+          {overlay?.kind === "funds" && <MobileFundHousesSheet onClose={() => setOverlay(null)} />}
+          {overlay?.kind === "crosssell" && <MobileCrossSellSheet onClose={() => setOverlay(null)} />}
+          {overlay?.kind === "insights" && <MobileInsightsSheet onClose={() => setOverlay(null)} />}
 
           <nav
             aria-label="Primary"

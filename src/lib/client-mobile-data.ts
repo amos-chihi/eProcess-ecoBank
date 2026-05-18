@@ -10,6 +10,7 @@ export interface MobileNotification {
   at: string;
   read: boolean;
   actionTab?: "goals" | "invest" | "messages";
+  actionSheet?: "robo" | "funds" | "crosssell" | "insights";
 }
 
 export interface MobileMessageThread {
@@ -55,6 +56,16 @@ export const MOBILE_NOTIFICATIONS: MobileNotification[] = [
     actionTab: "messages",
   },
   {
+    id: "n-robo",
+    kind: "market",
+    titleKey: "mob_notif_robo_title",
+    bodyKey: "mob_notif_robo_body",
+    at: "Today 09:15",
+    read: false,
+    actionTab: "invest",
+    actionSheet: "robo",
+  },
+  {
     id: "n-rebal",
     kind: "market",
     titleKey: "mob_notif_rebal_title",
@@ -62,6 +73,15 @@ export const MOBILE_NOTIFICATIONS: MobileNotification[] = [
     at: "Yesterday",
     read: true,
     actionTab: "invest",
+  },
+  {
+    id: "n-xs",
+    kind: "nudge",
+    titleKey: "mob_notif_xs_title",
+    bodyKey: "mob_notif_xs_body",
+    at: "Yesterday",
+    read: false,
+    actionSheet: "crosssell",
   },
   {
     id: "n-branch",
@@ -111,6 +131,12 @@ export const MOBILE_MESSAGE_THREADS: MobileMessageThread[] = [
     bodyKey: "mob_msg_system_body",
   },
 ];
+
+export const MOBILE_INSIGHTS = [
+  { titleKey: "mob_insight_1_title", bodyKey: "mob_insight_1_body", tagKey: "mob_insight_tag_risk" },
+  { titleKey: "mob_insight_2_title", bodyKey: "mob_insight_2_body", tagKey: "mob_insight_tag_nudge" },
+  { titleKey: "mob_insight_3_title", bodyKey: "mob_insight_3_body", tagKey: "mob_insight_tag_alloc" },
+] as const;
 
 export const HANDOFF_RECAP_BULLETS = [
   "mob_handoff_b1",

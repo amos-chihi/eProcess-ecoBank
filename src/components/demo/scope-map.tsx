@@ -34,6 +34,13 @@ const PRODUCT_PILLARS: ScopeItem[] = [
     label: "Client investments",
   },
   {
+    id: "3b",
+    title: "Fund house connectivity",
+    bullets: ["AMC partners", "Cut-offs & NAV", "Factsheet · order stub"],
+    href: "/rm/integrations#fund-houses-detail",
+    label: "Fund houses",
+  },
+  {
     id: "4",
     title: "Multi-country deployment",
     bullets: ["Market clusters", "Tax config", "Disclosure packs"],
@@ -46,7 +53,7 @@ const FUNCTIONAL_MODULES: ScopeItem[] = [
   {
     id: "5",
     title: "Localized financial planning",
-    bullets: ["Tax rules", "EN / FR / PT", "Planning flow variants"],
+    bullets: ["Tax rules", "EN / FR / PT", "Ecobank cross-sell"],
     href: "/rm/markets",
     label: "Markets",
   },
@@ -63,6 +70,13 @@ const FUNCTIONAL_MODULES: ScopeItem[] = [
     bullets: ["Meeting stepper", "Goal-based sales", "Co-planning"],
     href: "/rm/meeting",
     label: "Meeting mode",
+  },
+  {
+    id: "7b",
+    title: "Robo advisory",
+    bullets: ["Rule proposals", "Accept / defer", "Audit trail"],
+    href: "/rm/robo",
+    label: "Robo desk",
   },
   {
     id: "8",
@@ -89,7 +103,7 @@ const ARCHITECTURE: ScopeItem[] = [
     id: "10",
     title: "API-first architecture",
     bullets: ["Integration health", "CRM / core / risk", "Event-ready story"],
-    href: "/rm/client-360",
+    href: "/rm/integrations",
     label: "Integrations",
   },
   {

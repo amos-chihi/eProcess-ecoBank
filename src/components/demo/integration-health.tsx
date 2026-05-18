@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { INTEGRATIONS_MOCK } from "@/lib/demo-data";
 import { useDemoLocale } from "@/components/demo/demo-locale-provider";
 
@@ -28,6 +29,12 @@ export function IntegrationHealth() {
           </li>
         ))}
       </ul>
+      <Link
+        href="/rm/integrations"
+        className="mt-4 block text-center text-[11px] font-semibold text-eco-teal-dark hover:underline"
+      >
+        {t("int_catalog_cta")} →
+      </Link>
     </div>
   );
 }

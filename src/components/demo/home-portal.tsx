@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
+import { ScopeMap } from "@/components/demo/scope-map";
 import { useDemoLocale } from "@/components/demo/demo-locale-provider";
 import { DEMO_LOCALES, type DemoLocale, type DemoMsgKey } from "@/lib/demo-i18n";
 
@@ -114,6 +115,29 @@ const CAPABILITY_GROUPS: CapabilityGroup[] = [
         descKey: "land_cap_security_desc",
         href: "/login",
         ctaKey: "land_cap_security_cta",
+      },
+      {
+        titleKey: "land_cap_robo_title",
+        descKey: "land_cap_robo_desc",
+        href: "/rm/robo",
+        ctaKey: "land_cap_robo_cta",
+      },
+      {
+        titleKey: "land_cap_integrations_title",
+        descKey: "land_cap_integrations_desc",
+        href: "/rm/integrations",
+        ctaKey: "land_cap_integrations_cta",
+      },
+    ],
+  },
+  {
+    headingKey: "land_group_wealth",
+    items: [
+      {
+        titleKey: "land_cap_fund_title",
+        descKey: "land_cap_fund_desc",
+        href: "/rm/integrations#fund-houses-detail",
+        ctaKey: "land_cap_fund_cta",
       },
     ],
   },
@@ -298,6 +322,14 @@ export function HomePortal() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Scope map — 12 pillars */}
+      <section className="border-t border-eco-border bg-eco-surface/30">
+        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
+          <h2 className="text-center text-xl font-semibold text-eco-navy">{t("land_scope_section")}</h2>
+        </div>
+        <ScopeMap />
       </section>
 
       {/* Integrations */}

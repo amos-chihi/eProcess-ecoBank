@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { ComplianceRail } from "@/components/demo/compliance-rail";
 import { HouseholdSmePanel } from "@/components/demo/household-sme-panel";
+import { CrossSellPanel } from "@/components/demo/cross-sell-panel";
+import { FundHousesPanel } from "@/components/demo/fund-houses-panel";
 import { InsightsPanel } from "@/components/demo/insights-panel";
 import { IntegrationHealth } from "@/components/demo/integration-health";
 import { useDemoLocale } from "@/components/demo/demo-locale-provider";
@@ -67,6 +69,12 @@ export default function Client360Page() {
               className="inline-flex min-h-11 w-full shrink-0 items-center justify-center rounded-lg border border-eco-border bg-white px-4 py-2 text-sm font-medium text-eco-navy transition hover:bg-eco-surface sm:w-auto"
             >
               {t("c360_previewMobile")}
+            </Link>
+            <Link
+              href="/rm/robo"
+              className="inline-flex min-h-11 w-full shrink-0 items-center justify-center rounded-lg border border-eco-teal/40 bg-eco-teal-muted/40 px-4 py-2 text-sm font-medium text-eco-teal-dark transition hover:bg-eco-teal-muted sm:w-auto"
+            >
+              {t("nav_robo")} →
             </Link>
           </div>
         </div>
@@ -150,6 +158,11 @@ export default function Client360Page() {
             </div>
             <InsightsPanel />
           </div>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <FundHousesPanel />
+          <CrossSellPanel />
         </div>
       </div>
       <ComplianceRail />

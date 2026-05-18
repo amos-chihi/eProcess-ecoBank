@@ -5,6 +5,8 @@ import { useDemoLocale } from "@/components/demo/demo-locale-provider";
 import type { DemoGoal } from "@/lib/demo-data";
 import { formatGhs } from "@/lib/format";
 import { MobileContainedSheet } from "./mobile-contained-sheet";
+import { CROSS_SELL_PRODUCTS, FUND_HOUSES, ROBO_PROPOSAL } from "@/lib/ecobank-capabilities-data";
+import type { DemoMsgKey } from "@/lib/demo-i18n";
 
 const REBAL_BEFORE = [
   { labelKey: "mob_alloc_fixed" as const, pct: 48 },
@@ -146,6 +148,174 @@ export function MobileWhatIfSheet({ goal, onClose }: { goal: DemoGoal; onClose: 
         <p className="mt-1 text-[11px] text-eco-muted">{t("mob_whatif_horizon")}</p>
       </div>
       <p className="mt-3 text-[11px] text-eco-muted">{t("mob_whatif_note")}</p>
+    </MobileContainedSheet>
+  );
+}
+
+const XS_CATEGORY: Record<string, DemoMsgKey> = {
+  savings: "xs_cat_savings",
+  insurance: "xs_cat_insurance",
+  lending: "xs_cat_lending",
+  wealth: "xs_cat_wealth",
+};
+
+export function MobileRoboSheet({ onClose }: { onClose: () => void }) {
+  const { t } = useDemoLocale();
+  const [status, setStatus] = useState<"pending" | "accepted" | "deferred">("pending");
+  const p = ROBO_PROPOSAL;
+
+  return (
+    <MobileContainedSheet title={t("robo_title")} onClose={onClose}>
+      <p className="text-xs text-eco-muted">{p.createdAt}</p>
+      <p className="mt-3 text-sm leading-relaxed text-eco-ink">{t(p.summaryKey as DemoMsgKey)}</p>
+      <p className="mt-2 text-xs text-eco-muted">
+        {t("robo_confidence")}: {Math.round(p.confidence * 100)}%
+      </p>
+      <ul className="mt-4 space-y-2 text-xs">
+        {p.shifts.map((s, i) => (
+          <li key={`${s.sleeve}-${i}`} className="flex justify-between rounded-lg border border-eco-border px-3 py-2">
+            <span className="text-eco-ink">{s.sleeve}</span>
+            <span className="text-eco-muted">
+              {s.fromPct}% → <span className="font-semibold text-eco-teal-dark">{s.toPct}%</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+      {status === "pending" ? (
+        <div className="mt-4 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => setStatus("accepted")}
+            className="min-h-11 rounded-xl bg-eco-navy py-3 text-sm font-semibold text-white"
+          >
+            {t("robo_accept")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatus("deferred")}
+            className="min-h-11 rounded-xl border border-eco-border py-3 text-sm font-medium text-eco-navy"
+          >
+            {t("robo_defer")}
+          </button>
+        </div>
+      ) : (
+        <p className="mt-4 rounded-lg bg-emerald-50 px-3 py-2 text-center text-xs font-semibold text-emerald-800">
+          {status === "accepted" ? t("robo_status_accepted") : t("robo_status_deferred")}
+        </p>
+      )}
+      <p className="mt-3 text-[10px] leading-relaxed text-eco-muted">{t("robo_disclaimer")}</p>
+    </MobileContainedSheet>
+  );
+}
+
+export function MobileFundHousesSheet({ onClose }: { onClose: () => void }) {
+  const { t } = useDemoLocale();
+  const [toast, setToast] = useState<string | null>(null);
+
+  return (
+    <MobileContainedSheet title={t("fund_title")} onClose={onClose}>
+      <p className="text-xs text-eco-muted">{t("fund_sub")}</p>
+      <ul className="mt-4 space-y-3">
+        {FUND_HOUSES.map((fh) => (
+          <li key={fh.id} className="rounded-lg border border-eco-border bg-eco-surface/40 p-3 text-xs">
+            <p className="font-semibold text-eco-navy">{fh.name}</p>
+            <p className="mt-1 text-eco-muted">
+              {fh.region} · {t("fund_cutoff")}: {fh.cutOff}
+            </p>
+            <div className="mt-2 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setToast(t("fund_factsheet_body"))}
+                className="rounded-lg border border-eco-border px-2 py-1 text-[11px] font-medium"
+              >
+                {t("fund_factsheet")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setToast(t("fund_order_toast"))}
+                className="rounded-lg bg-eco-navy px-2 py-1 text-[11px] font-semibold text-white"
+              >
+                {t("fund_place_order")}
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {toast && (
+        <p className="mt-3 rounded-lg bg-eco-teal-muted px-3 py-2 text-center text-[11px] text-eco-teal-dark">
+          {toast}
+        </p>
+      )}
+    </MobileContainedSheet>
+  );
+}
+
+export function MobileCrossSellSheet({ onClose }: { onClose: () => void }) {
+  const { t } = useDemoLocale();
+  const [added, setAdded] = useState<string[]>([]);
+
+  return (
+    <MobileContainedSheet title={t("xs_title")} onClose={onClose}>
+      <p className="text-xs text-eco-muted">{t("xs_sub")}</p>
+      <ul className="mt-4 space-y-2">
+        {CROSS_SELL_PRODUCTS.map((p) => (
+          <li
+            key={p.id}
+            className={`rounded-lg border p-3 text-xs ${
+              added.includes(p.id) ? "border-eco-teal bg-eco-teal-muted/30" : "border-eco-border"
+            }`}
+          >
+            <span className="text-[9px] font-semibold uppercase text-eco-muted">
+              {t(XS_CATEGORY[p.category])}
+            </span>
+            <p className="mt-1 font-medium text-eco-navy">{p.name}</p>
+            <p className="mt-1 text-eco-muted">{t(p.fitReasonKey as DemoMsgKey)}</p>
+            <button
+              type="button"
+              onClick={() =>
+                setAdded((prev) =>
+                  prev.includes(p.id) ? prev.filter((x) => x !== p.id) : [...prev, p.id],
+                )
+              }
+              className="mt-2 w-full rounded-lg bg-eco-navy py-2 text-[11px] font-semibold text-white"
+            >
+              {added.includes(p.id) ? t("xs_added") : t("xs_add_pack")}
+            </button>
+            {p.suitabilityRequired && (
+              <p className="mt-1 text-center text-[10px] text-amber-800">{t("xs_suit_required")}</p>
+            )}
+          </li>
+        ))}
+      </ul>
+      {added.length > 0 && (
+        <p className="mt-3 text-[11px] text-eco-teal-dark">{t("xs_meeting_note")}</p>
+      )}
+    </MobileContainedSheet>
+  );
+}
+
+export function MobileInsightsSheet({ onClose }: { onClose: () => void }) {
+  const { t } = useDemoLocale();
+  const items = [
+    { title: "mob_insight_1_title", body: "mob_insight_1_body", tag: "mob_insight_tag_risk" },
+    { title: "mob_insight_2_title", body: "mob_insight_2_body", tag: "mob_insight_tag_nudge" },
+    { title: "mob_insight_3_title", body: "mob_insight_3_body", tag: "mob_insight_tag_alloc" },
+  ] as const;
+
+  return (
+    <MobileContainedSheet title={t("mob_insights_title")} onClose={onClose}>
+      <p className="text-xs text-eco-muted">{t("mob_insights_sub")}</p>
+      <ul className="mt-4 space-y-3">
+        {items.map((ins) => (
+          <li key={ins.title} className="rounded-lg border border-eco-border bg-white p-3 text-xs">
+            <span className="rounded bg-eco-surface px-1.5 py-0.5 text-[10px] font-semibold text-eco-muted">
+              {t(ins.tag as DemoMsgKey)}
+            </span>
+            <p className="mt-2 font-semibold text-eco-navy">{t(ins.title as DemoMsgKey)}</p>
+            <p className="mt-1 leading-relaxed text-eco-muted">{t(ins.body as DemoMsgKey)}</p>
+          </li>
+        ))}
+      </ul>
     </MobileContainedSheet>
   );
 }

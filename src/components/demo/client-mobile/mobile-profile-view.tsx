@@ -3,8 +3,19 @@
 import { useDemoLocale } from "@/components/demo/demo-locale-provider";
 import { DEMO_CLIENT } from "@/lib/demo-data";
 import { DEMO_LOCALES, type DemoLocale, type DemoMsgKey } from "@/lib/demo-i18n";
+import { MobileQuickActions } from "./mobile-quick-actions";
 
-export function MobileProfileView() {
+export function MobileProfileView({
+  onOpenFunds,
+  onOpenRobo,
+  onOpenCrossSell,
+  onOpenInsights,
+}: {
+  onOpenFunds: () => void;
+  onOpenRobo: () => void;
+  onOpenCrossSell: () => void;
+  onOpenInsights: () => void;
+}) {
   const { locale, setLocale, t } = useDemoLocale();
   const c = DEMO_CLIENT;
 
@@ -41,6 +52,15 @@ export function MobileProfileView() {
           </div>
         </dl>
       </div>
+
+      <MobileQuickActions
+        onOpenFunds={onOpenFunds}
+        onOpenRobo={onOpenRobo}
+        onOpenCrossSell={onOpenCrossSell}
+        onOpenInsights={onOpenInsights}
+      />
+
+      <p className="text-xs font-semibold text-eco-muted">{t("mob_profile_services")}</p>
 
       <div className="rounded-xl border border-eco-border bg-white p-4">
         <p className="text-xs font-semibold text-eco-muted">{t("mob_profile_lang")}</p>

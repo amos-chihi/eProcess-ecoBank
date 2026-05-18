@@ -11,6 +11,7 @@ import {
   type MobileNotification,
 } from "@/lib/client-mobile-data";
 import { formatGhs } from "@/lib/format";
+import { MobileInsightsStrip } from "./mobile-insights-strip";
 
 type TopSeg = "overview" | "notifications";
 
@@ -24,12 +25,18 @@ export function MobileGoalsView({
   onDismissHandoff,
   onNavigateTab,
   onSelectGoal,
+  onOpenInsights,
+  onOpenCrossSell,
+  onOpenSheet,
 }: {
   top: TopSeg;
   showHandoffBanner: boolean;
   onDismissHandoff: () => void;
   onNavigateTab: (tab: "invest" | "messages") => void;
   onSelectGoal: (goal: DemoGoal) => void;
+  onOpenInsights: () => void;
+  onOpenCrossSell: () => void;
+  onOpenSheet: (sheet: "robo" | "funds" | "crosssell" | "insights") => void;
 }) {
   const { t } = useDemoLocale();
   const [handoffExpanded, setHandoffExpanded] = useState(false);
@@ -68,7 +75,8 @@ export function MobileGoalsView({
                 setNotifications((prev) =>
                   prev.map((x) => (x.id === n.id ? { ...x, read: true } : x)),
                 );
-                if (n.actionTab === "invest") onNavigateTab("invest");
+                if (n.actionSheet) onOpenSheet(n.actionSheet);
+                else if (n.actionTab === "invest") onNavigateTab("invest");
                 else if (n.actionTab === "messages") onNavigateTab("messages");
               }}
             />
@@ -145,6 +153,22 @@ export function MobileGoalsView({
           </span>
         </div>
       </div>
+
+      <div className="mt-4">
+        <MobileInsightsStrip onViewAll={onOpenInsights} />
+      </div>
+
+      <button
+        type="button"
+        onClick={onOpenCrossSell}
+        className="mt-3 flex min-h-11 w-full items-center justify-between rounded-xl border border-eco-teal/30 bg-eco-teal-muted/30 px-4 py-3 text-left text-sm"
+      >
+        <span>
+          <span className="font-semibold text-eco-navy">{t("xs_title")}</span>
+          <span className="mt-0.5 block text-[11px] text-eco-muted">{t("mob_notif_xs_body")}</span>
+        </span>
+        <span className="text-eco-teal-dark">→</span>
+      </button>
 
       <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-eco-muted">
         {t("mob_goals_heading")}
