@@ -44,6 +44,22 @@ export function MobileInvestView({
               <p className="mt-1 text-[11px] text-eco-muted">
                 {t("fund_cutoff")}: {fh.cutOff}
               </p>
+              <div className="mt-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={onOpenFunds}
+                  className="flex-1 rounded-lg border border-eco-border py-1.5 text-[11px] font-medium"
+                >
+                  {t("fund_factsheet")}
+                </button>
+                <button
+                  type="button"
+                  onClick={onOpenFunds}
+                  className="flex-1 rounded-lg bg-eco-navy py-1.5 text-[11px] font-semibold text-white"
+                >
+                  {t("fund_place_order")}
+                </button>
+              </div>
             </li>
           ))}
         </ul>

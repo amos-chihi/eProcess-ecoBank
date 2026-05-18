@@ -7,10 +7,14 @@ export function MobileContainedSheet({
   title,
   onClose,
   children,
+  footerLabel,
+  onFooterClick,
 }: {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  footerLabel?: string;
+  onFooterClick?: () => void;
 }) {
   const { t } = useDemoLocale();
 
@@ -34,10 +38,10 @@ export function MobileContainedSheet({
         <div className="shrink-0 border-t border-eco-border p-4">
           <button
             type="button"
-            onClick={onClose}
+            onClick={onFooterClick ?? onClose}
             className="w-full min-h-11 rounded-xl border border-eco-border py-3 text-sm font-medium text-eco-muted"
           >
-            {t("mob_goal_sheet_close")}
+            {footerLabel ?? t("mob_goal_sheet_close")}
           </button>
         </div>
       </div>

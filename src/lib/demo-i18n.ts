@@ -185,6 +185,15 @@ const en = {
   fund_factsheet_body:
     "KIID / factsheet PDF would open here. Orders route through wealth core with suitability checks.",
   fund_order_toast: "Order stub submitted — pending fund-house confirmation.",
+  mob_fund_order_title: "Place order",
+  mob_fund_order_amount: "Subscription amount (GHS)",
+  mob_fund_order_sleeve: "Goal sleeve",
+  mob_fund_order_sleeve_edu: "Education",
+  mob_fund_order_sleeve_ret: "Retirement",
+  mob_fund_order_confirm: "Submit order stub",
+  mob_fund_order_back: "Back",
+  mob_fund_order_reference: "Reference",
+  mob_fund_order_from_factsheet: "Place order for this fund",
 
   xs_title: "Recommended Ecobank products",
   xs_sub: "Cross-sell aligned to goals and risk persona — suitability gate where required.",
