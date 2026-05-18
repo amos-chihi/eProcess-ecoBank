@@ -5,9 +5,11 @@ import { useMemo, useState } from "react";
 import { useDemoLocale } from "@/components/demo/demo-locale-provider";
 import { useLearningPlatform } from "@/contexts/learning-platform-context";
 import { HR_LD_INTEGRATION } from "@/lib/demo-data";
+import { buildTranscriptEntries, type TranscriptEntry } from "@/lib/learning-transcript-data";
 import { DEMO_HR_SYNC_EVENTS, type HrSyncEvent } from "@/lib/hr-portal-data";
 import { useLearning } from "../learning-context";
 import { LearningPageHeader } from "../learning-page-header";
+import { TranscriptViewer } from "../transcript-viewer";
 
 type HrTab = "overview" | "assignments" | "transcript" | "sync";
 
@@ -34,8 +36,12 @@ function SyncDirectionBadge({ event }: { event: HrSyncEvent }) {
 export function HrPortalClient() {
   const { t } = useDemoLocale();
   const [tab, setTab] = useState<HrTab>("overview");
-  const { syncFlash, lastSync, hrOpenItems, handleSync, setHrModalOpen, certs, openCert } =
+  const { syncFlash, lastSync, hrOpenItems, handleSync, setHrModalOpen, certs, openCert, showToast } =
     useLearning();
+  const [transcriptViewer, setTranscriptViewer] = useState<{
+    mode: "full" | "entry";
+    entry: TranscriptEntry | null;
+  } | null>(null);
   const { catalog, enrollments, auditLog } = useLearningPlatform();
 
   const hrOnlyCourses = useMemo(
@@ -85,17 +91,21 @@ export function HrPortalClient() {
     return rows.sort((a, b) => (a.state === "urgent" ? -1 : b.state === "urgent" ? 1 : 0));
   }, [hrOnlyCourses, enrollments, certs]);
 
+  const transcriptEntries = useMemo(() => buildTranscriptEntries(certs), [certs]);
+
   const transcriptRows = useMemo(() => {
-    const completed = certs.filter((c) => c.status === "completed");
-    return completed.map((c, i) => ({
-      id: c.id,
-      title: c.title,
-      completedAt: ["13 May 2026", "28 Apr 2026", "15 Mar 2026"][i] ?? "2026",
-      cpdHours: c.cpdEarned,
-      source: c.embeddedInApp ? ("eProcess" as const) : ("Workday" as const),
-      certificateId: `CERT-${c.id.toUpperCase()}-2026`,
-    }));
-  }, [certs]);
+    return transcriptEntries
+      .filter((e) => e.status === "completed")
+      .map((e) => ({
+        id: e.id,
+        title: e.programmeTitle,
+        completedAt: e.issuedAt ?? "—",
+        cpdHours: e.cpdEarned,
+        source: e.source,
+        certificateId: e.certificateId ?? "—",
+        entry: e,
+      }));
+  }, [transcriptEntries]);
 
   const syncEvents = useMemo(() => {
     const fromAudit: HrSyncEvent[] = auditLog.slice(0, 3).map((a) => ({
@@ -348,13 +358,29 @@ export function HrPortalClient() {
               <h2 className="text-sm font-semibold text-eco-navy">{t("learn_hr_transcript_title")}</h2>
               <p className="mt-1 text-xs text-eco-muted">{t("learn_hr_transcript_sub")}</p>
             </div>
-            <button
-              type="button"
-              onClick={() => setHrModalOpen(true)}
-              className="rounded-lg border border-eco-border px-3 py-2 text-xs font-medium text-eco-navy hover:bg-eco-surface"
-            >
-              {t("learn_hr_export")}
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setTranscriptViewer({ mode: "full", entry: null })}
+                className="rounded-lg bg-eco-teal px-3 py-2 text-xs font-semibold text-white hover:bg-eco-teal-dark"
+              >
+                {t("learn_transcript_view_full")}
+              </button>
+              <button
+                type="button"
+                onClick={() => showToast(t("learn_transcript_download_toast"))}
+                className="rounded-lg border border-eco-border px-3 py-2 text-xs font-medium text-eco-navy hover:bg-eco-surface"
+              >
+                {t("learn_transcript_download")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setHrModalOpen(true)}
+                className="rounded-lg border border-eco-border px-3 py-2 text-xs font-medium text-eco-navy hover:bg-eco-surface"
+              >
+                {t("learn_hr_export")}
+              </button>
+            </div>
           </header>
           {transcriptRows.length === 0 ? (
             <p className="px-5 py-10 text-center text-sm text-eco-muted">{t("learn_hr_transcript_empty")}</p>
@@ -368,6 +394,7 @@ export function HrPortalClient() {
                     <th className="px-5 py-3">{t("learn_cpd")}</th>
                     <th className="px-5 py-3">{t("learn_hr_transcript_source")}</th>
                     <th className="px-5 py-3">{t("learn_hr_certificate")}</th>
+                    <th className="px-5 py-3 text-right">{t("learn_transcript_actions")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-eco-border">
@@ -388,6 +415,15 @@ export function HrPortalClient() {
                         </span>
                       </td>
                       <td className="px-5 py-3 font-mono text-xs text-eco-muted">{row.certificateId}</td>
+                      <td className="px-5 py-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => setTranscriptViewer({ mode: "entry", entry: row.entry })}
+                          className="rounded-lg bg-eco-navy px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-eco-navy/90"
+                        >
+                          {t("learn_transcript_view")}
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -434,6 +470,16 @@ export function HrPortalClient() {
             </button>
           </div>
         </section>
+      )}
+
+      {transcriptViewer && (
+        <TranscriptViewer
+          mode={transcriptViewer.mode}
+          entry={transcriptViewer.entry}
+          entries={transcriptEntries}
+          onClose={() => setTranscriptViewer(null)}
+          onDownload={() => showToast(t("learn_transcript_download_toast"))}
+        />
       )}
     </>
   );
