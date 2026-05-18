@@ -50,7 +50,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">{children}</main>
+      <main className="mx-auto max-w-6xl px-4 py-6 pb-10 sm:px-6 sm:py-8">{children}</main>
     </div>
   );
 }

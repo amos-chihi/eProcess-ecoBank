@@ -66,13 +66,13 @@ function ClientWebContent() {
         </div>
       </div>
 
-      <nav className="flex flex-wrap gap-2 border-b border-eco-border pb-3 text-sm">
+      <nav className="sticky top-0 z-10 -mx-4 flex gap-2 overflow-x-auto border-b border-eco-border bg-eco-surface/95 px-4 pb-3 pt-1 text-sm backdrop-blur sm:static sm:mx-0 sm:flex-wrap sm:overflow-visible sm:bg-transparent sm:px-0 sm:pt-0 [-webkit-overflow-scrolling:touch]">
         {tabs.map(({ key, label }) => (
           <button
             key={key}
             type="button"
             onClick={() => selectTab(key)}
-            className={`min-h-11 rounded-full px-4 py-2 font-medium transition ${
+            className={`min-h-11 shrink-0 rounded-full px-4 py-2 font-medium transition ${
               tab === key ? "bg-eco-navy text-white" : "bg-white text-eco-muted ring-1 ring-eco-border"
             }`}
           >
